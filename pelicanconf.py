@@ -69,12 +69,13 @@ foobar = "barbaz"
 
 DISPLAY_TAGS_INLINE = True
 DISPLAY_RECENT_POSTS_ON_SIDEBAR = True
-
+# 相关文章
+RELATED_POSTS_MAX = 10
 
 ## 插件目录
 PLUGIN_PATHS = [u"pelican-plugins"]
 
-PLUGINS = ["sitemap"]
+PLUGINS = [u"sitemap",u"gzip_cache",u"neighbors",u"related_posts"]
 
 ## 配置sitemap 插件
 SITEMAP = {
@@ -90,6 +91,9 @@ SITEMAP = {
         "pages": "monthly",
     }
 }
+
+# 随机跳转到某日志
+#RANDOM = 'random.html'
 
 LICENSE = '转载请注明来源<a href="http://bigbo.github.io/" target="_blank">Bigbo</a>'
 
