@@ -1,6 +1,6 @@
-Title: MooseFS浅析
+Title: MooseFS浅析(一)
 Date: 2015-01-05 23:10
-Modified: 2015-01-05 23:10
+Modified: 2015-01-06 22:50
 Category: Tecnology
 Tages: 分布式文件系统,Moosefs,分布式存储
 Slug: Moosefs浅析
@@ -19,7 +19,7 @@ Author: ljingb
 > 4. 可以对整个文件甚至在正在写入的文件创建文件的快照。
 > 5. 使用和部署非常简单,直接mount使用
 
-对于**Moosefs**的介绍我在此就不详细说了,更多介绍可以查看[官网][1]以及[英文版权威指南][2]或是查看田逸所翻译总结的[权威指南][3],以上介绍的比自己总结的可能更加详细.我后面的总结是对以上内容的补充.
+ 对于**Moosefs**的介绍我在此就不详细说了,更多介绍可以查看[官网][1]以及[英文版权威指南][2]或是查看田逸所翻译总结的[权威指南][3],以上介绍的比自己总结的可能更加详细.我后面的总结是对以上内容的补充.
 
 **\*AD:更多资料详见[GitHub][4]**
 
@@ -44,14 +44,15 @@ Author: ljingb
 * * *
 
 ##配置文件详解
-主要对**V1.6.27-5**版本的配置文件进行解析,后续跟进**2.x**版本配置文件.
+> 主要对**V1.6.27-5**版本的配置文件进行解析,后续跟进**2.x**版本配置文件.
 
 ###master服务器
-Metadata元数据存储在master服务器的内存中,同时也保存在磁盘上(作为一个定期更新的二进制文件,并实时的更新changelog日志).如果存在metaloggers的话,主要的二进制文件以及日志也复制到metaloggers中.(权威手册中有详细性能测试信息)
+> Metadata元数据存储在master服务器的内存中,同时也保存在磁盘上(作为一个定期更新的二进制文件,并实时的更新changelog日志).如果存在metaloggers的话,主要的二进制文件以及日志也复制到metaloggers中.(权威手册中有详细性能测试信息)
 
 ####master主要配置文件
 
 * mfsmaster.cfg
+> 主配置文件
 ```
 参数说明如下：
  # WORKING_USER和WORKING_GROUP：是运行master server的用户和组；
@@ -78,26 +79,32 @@ Metadata元数据存储在master服务器的内存中,同时也保存在磁盘�
 ```
 
 * mfsexports.cfg
+
+> MFS访问使用权限控制配置文件;地址可以指定的几种表现形式：
+
+    所有ip，单个ip，IP网络地址/位数掩码，IP网络地址/子网掩码，ip段范围。
+
+> 权限部分：
 ```
-MFS访问使用权限控制配置文件
- 地址可以指定的几种表现形式：所有ip，单个ip，IP网络地址/位数掩码，IP网络地址/子网掩码，ip段范围。
-
-  权限部分：
-   ro  只读模式共享  rw  读写方式共享  alldirs  许挂载任何指定的子目录  maproot   映射为root，还是指定的用户   password  指定客户端密码
-
+   ro  只读模式共享  
+   rw  读写方式共享  
+   alldirs  许挂载任何指定的子目录  
+   maproot   映射为root,还是指定的用户   
+   password  指定客户端密码
 ```
 
 ####metadata.mfs文件
-metadata.mfs, metadata.mfs.back是MooseFS文件系统的元数据metadata的镜像
+> metadata.mfs, metadata.mfs.back是MooseFS文件系统的元数据metadata的镜像,对集群的数据存储至关重要.做主从也好,做集群备份也好,都是对这些文件做的备份.
 
 ####changelog.\*.mfs 文件
-1. changelog.\*.mfs 是MooseFS文件系统元数据的改变日志(每一个小时合并到metadata.mfs中一次)
-2. -Metadata文件的大小取决于文件数(而不是他们的大小),Changelog的大小取决于每小时的操作次数.
-(mfsmaster.cfg配置文件中可以设置)
+> 1. changelog.\*.mfs 是MooseFS文件系统元数据的改变日志(每一个小时合并到metadata.mfs中一次)
+> 2. Metadata文件的大小取决于文件数(而不是他们的大小),Changelog的大小取决于每小时的操作次数.(mfsmaster.cfg配置文件中可以设置)
 
 ###metalogger服务器
+> master备份服务器,在保证服务高可用的情况下使用(即使不做高可用也需要做个备份服务),服务器性能理论上要比master更好.至少不能比master次.
 
 ####metalogger主要配置文件
+
 * mfsmetalogger.cfg
 ```
  # WORKING_USER和WORKING_GROUP:是运行mfsmetalogger server的用户和组；
@@ -117,16 +124,16 @@ metadata.mfs, metadata.mfs.back是MooseFS文件系统的元数据metadata的镜�
 ```
 
 ####changelog_ml.\*.mfs文件
- changelog_ml.\*.mfs是MooseFS文件系统的元数据的changelog日志(备份的Master 的Master的changelog日志)
+> changelog_ml.\*.mfs是MooseFS文件系统的元数据的changelog日志(备份的Master 的Master的changelog日志)
 
 ####metadata.ml.mfs.back文件
- metadata.ml.mfs.back是从Master主机上下载的最新的完整metadata.mfs.back的拷贝
+> metadata.ml.mfs.back是从Master主机上下载的最新的完整metadata.mfs.back的拷贝
 
 ####sessions.ml.mfs文件
- sessions.ml.mfs是从master下载的最新的sessions.mfs文件拷贝
+> sessions.ml.mfs是从master下载的最新的sessions.mfs文件拷贝
 
 ###chunker服务器
-数据真实存储的位置
+> 数据真实存储的位置,实际使用中,对硬件资源消耗不是很大,最终的瓶颈在网卡和磁盘IO.
 
 ####chunker主要配置文件
 
@@ -152,17 +159,18 @@ metadata.mfs, metadata.mfs.back是MooseFS文件系统的元数据metadata的镜�
 ```
 
 #### mfshdd.cfg文件
- 目录列表（指定的）用于moosefs挂载存储
+> 目录列表（指定的）用于moosefs挂载存储
+
+> **\*AD**:当某块磁盘发生故障后可以在前面加\*,集群便会在后续冗余中,把相应磁盘或是存储位置的数据转移到其他地方存储
 
 ###mfsclient(mount)服务器
- 安装相应挂载程序使用mfsmount -H MASTER_MFS_HOST /mnt/mfs,进行磁盘挂载.
+> 客户端,安装相应挂载程序使用mfsmount -H MASTER_MFS_HOST /mnt/mfs,进行磁盘挂载.关于使用嘛,找下man吧.
 
 * * *
 
 ##测试
- 官网手册有详细测试信息
+> 官网手册有详细测试信息
 
-* * *
 
-##维护使用
-
+##总结
+> 零零散散算是把相关配置文件大致介绍一遍,没想成已经有不少内容,不多多半都是配置文件内容,感觉以上介绍离实际用处好远.准备接下来写些MFS使用相关的介绍.此篇准备随时更新.
