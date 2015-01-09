@@ -44,7 +44,7 @@ STATIC_PATHS = ["pictures", ]
 #RELATIVE_URLS = True
 
 ## 主题设置
-THEME = 'pelican-themes/notmyidea-cms-fr'
+THEME = 'pelican-themes/pelican-bootstrap3'
 THEME_STATIC_DIR = 'theme'
 CSS_FILE = "main.css"
 
