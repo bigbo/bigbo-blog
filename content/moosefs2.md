@@ -58,7 +58,8 @@ see: /data/jingbo.li/mfs/bin/mfsmount -h for help
         或者
         mfsmount -o mfsmeta -H mfs1.com.org /mnt/mfsmeta
 > 需要注意的是,如果要挂载mfsmeta,一定要在mfsmaster的mfsexports.cfg文件中加入如下条目:* . rw
-> > 挂载后在/mnt/mfsmeta目录下分reserved和trash两个目录,trash为已删除文件存放目录,删除时间根据mfsgettrashtime设置时间来自动删除.
+>
+> 挂载后在/mnt/mfsmeta目录下分reserved和trash两个目录,trash为已删除文件存放目录,删除时间根据mfsgettrashtime设置时间来自动删除.
 
 * 设置文件或目录的删除时间
 > 一个删除的文件能够存放在“ 垃圾箱”中的时间称为隔离时间,这个时间可以用**mfsgettrashtime**命令来查看:
