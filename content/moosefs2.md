@@ -17,7 +17,7 @@ Author: ljingb
 
 > > 正常启动顺序：matser---chunker---metalogger---client.
 
-> >  关闭顺序：client---chunker---metalogger---master
+> > 关闭顺序：client---chunker---metalogger---master
 
 * * *
 
