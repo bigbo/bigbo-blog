@@ -45,6 +45,7 @@ STATIC_PATHS = ["pictures", ]
 
 ## 主题设置
 THEME = 'pelican-themes/pelican-bootstrap3'
+#THEME = 'pelican-themes/pelican-fresh'
 THEME_STATIC_DIR = 'theme'
 CSS_FILE = "main.css"
 
