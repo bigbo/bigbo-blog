@@ -35,7 +35,7 @@ SOCIAL = (('atom', FEED_ALL_ATOM),
           ('Linkedin', 'https://lnkd.in/bsndpJX'),)
 
 ## 分页
-DEFAULT_PAGINATION = 10
+DEFAULT_PAGINATION = 2
 
 ## 静态目录设置
 STATIC_PATHS = ["pictures", ]
