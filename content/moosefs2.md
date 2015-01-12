@@ -90,11 +90,13 @@ see: /data/jingbo.li/mfs/bin/mfsmount -h for help
 > ####UCARP方案
 > * 两台主机安装ucarp,ucarp允许多个主机共享一个虚拟的ip地址,以提供自动的故障恢复功能,当其中某个主机宕机时,其它的主机会自动接管服务,ARP协议的特点在于其非常低的开销,主机间使用加密数据传递信息,并且在冗余主机之间不需要任何额外的网络链接.
 
-> 1. 双机采用虚拟共用一个虚拟IP地址来实现故障自动迁移,执行指令``
+> 1. 双机采用虚拟共用一个虚拟IP地址来实现故障自动迁移,执行指令
+``
     ucarp -zB -i eth1 -s 192.168.1.100 -v 42 -p moose -a 192.168.1.252 --upscript=/data/jingbo.li/mfs/sbin/vip-up --downscript=/data/jingbo.li/mfs/sbin/vip-down
 ``
 > 当master宕机后从机可以即时启动恢复接管master的相应服务.
-> > **\***此中方案中要保证两台机器之前的网络畅通,网络抖动都可能影响服务.另外关于脚本的编写恢复策略也影响着恢复状况.我的github上有提供相关脚本.
+>
+> **\***此中方案中要保证两台机器之前的网络畅通,网络抖动都可能影响服务.另外关于脚本的编写恢复策略也影响着恢复状况.我的github上有提供相关脚本.
 
 > ####其他HA方案
 > * 其他高可用方案,例如:**DRBD+Heartbeat+Pacemaker**等,更多的就请教Google吧.
@@ -107,5 +109,7 @@ see: /data/jingbo.li/mfs/bin/mfsmount -h for help
 ##补充及总结
 算是对MFS实际应用做的一些总结,对于实际来说,使用情况会复杂的多,实际应用肯定会遇到好多的问题.后续根据使用情况再做些总结和规整.
 
-> 另外做些补充：
-> [百度对Moosefs二次开发](https://github.com/ops-baidu/shadow-mfs),[相关文章](http://www.zhangxiaolong.org/archives/242.html)
+另外做些补充：
+> 二次开发:[百度对Moosefs二次开发](https://github.com/ops-baidu/shadow-mfs),[相关文章](http://www.zhangxiaolong.org/archives/242.html)
+>
+> 使用:实际使用来看,不可能使用每个客户端使用的时候都去安装其客户端,造成使用不太方便,其实可以找一台机器挂载MFS后,在其上面搭建一个**FTP**等相关文件下载或是上传的服务,再加些权限限制,这样对使用者来说就非常方便和友好了.
