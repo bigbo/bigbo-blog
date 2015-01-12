@@ -64,6 +64,7 @@ see: /data/jingbo.li/mfs/bin/mfsmount -h for help
 * 设置文件或目录的删除时间
 > 一个删除的文件能够存放在“ 垃圾箱”中的时间称为隔离时间,这个时间可以用**mfsgettrashtime**命令来查看:
 > > ![mfsgettrashtime命令](/pictures/mfs_pic4.png)
+> > 
 > > 用**mfssettrashtime**命令来设置上面的这个有效时间,要注意的是,保存时间单位为秒.
 > > ![mfssettrashtime命令](/pictures/mfs_pic5.png)
 
