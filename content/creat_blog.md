@@ -1,7 +1,7 @@
 Title: 用Pelican&GitHubPages搭建个人博客
 Date: 2014-12-28 00:02
 Modified: 2014-12-28 00:02
-Category: Tecnology
+Category: Technology
 Tags: github pages, pelican
 Slug: create-blog
 Author: ljingb

@@ -1,7 +1,7 @@
 Title: MooseFS浅析(一)
 Date: 2015-01-05 23:10
 Modified: 2015-01-06 22:50
-Category: Tecnology
+Category: Technology
 Tags: 分布式文件系统,Moosefs,分布式存储
 Slug: Moosefs_one
 Author: ljingb
