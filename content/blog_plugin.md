@@ -83,6 +83,17 @@ SITEMAP = {
 ```
 > 可以上传后测试下,基本上能在10s内刷新出来.效果明显.
 
+**\*国内其他开公共库**:
+ [百度CDN公共库][1]; 
+ [新浪云计算CDN公共库][2]; 
+ [又拍云JS库CDN服务][3]; 
+ [七牛云静态文件CDN][4]; 
+
+ [1]: http://developer.baidu.com/wiki/index.php?title=docs/cplat/libs
+ [2]: http://lib.sinaapp.com/
+ [3]: http://jscdn.upai.com/
+ [4]: http://www.staticfile.org/ 
+
 * * *
 
 ##Google(百度) Analytics和Webmasters设置
