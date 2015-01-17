@@ -90,6 +90,44 @@ SITEMAP = {
 
 * * *
 
+##添加多说评论
+首先在[多说](http://duoshuo.com/)的网站中注册一个账号.
+
+> ####修改模板文件
+> 修改```templates/article.html```内容,在最后一个endif之后添加如下内容
+```
+{% if DUOSHUO_SITENAME and SITEURL and article.status != "draft" %}
+  <div class="comments">
+    <h2>Comments !</h2>
+    <!-- Duoshuo Comment BEGIN -->
+    <div class="ds-thread"></div>
+    <script type="text/javascript">
+        var duoshuoQuery = {short_name:"{{ DUOSHUO_SITENAME }}"};
+  (function() {
+   var ds = document.createElement('script');
+   ds.type = 'text/javascript';ds.async = true;
+   ds.src = 'http://static.duoshuo.com/embed.js';
+   ds.charset = 'UTF-8';
+   (document.getElementsByTagName('head')[0]
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+
+   })();
+  </script>
+  <noscript>Please enable JavaScript to view the comments.</noscript>
+<!-- Duoshuo Comment END -->
+</endif>
+```
+> 这段代码会自动引入多说的评论插件,显示评论内容.
+>
+> ####修改配置文件
+> 在Pelicanconf.py中添加
+```
+DUOSHUO_SITENAME = "你的blog名称"
+```
+> 然后重新生成网站就会看到相关的评论界面了.
+
+* * * 
+
 ##配置文件其他配置
 还有一些其他配置就不一一详解了,以下列出仅供参考.
 ```

@@ -51,6 +51,7 @@ CSS_FILE = "main.css"
 
 ## 评论设置
 DISQUS_SITENAME = 'bigbo'
+DUOSHUO_SITENAME = 'bigbo'
 
 ## 设置URL按照日期显示
 ARTICLE_URL = 'pages/{date:%Y}/{date:%m}/{date:%d}/{slug}/'
