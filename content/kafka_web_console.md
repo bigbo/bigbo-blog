@@ -7,7 +7,7 @@ Slug: kafka_web_console
 Author: ljingb
 
 ##前言
-最近在了解消息队列,主要是之前用的是redis,redis固然非常好用,但是也有相应的使用场景.随着数据量的增长,redis已经不能满足现在的需求了.所以需要找个更好的替代品.问了一圈大牛,也google一番,锁定在[kafka](http://kafka.apache.org/)上了.关于**kafka**怎么"玩",我也不知道,算是在摸索当中,想要知道安装使用等方法,请移步Google吧.虽然kafka我不会完,但是我会玩怎么监控它.
+最近在了解消息队列,主要是之前用的是redis,redis固然非常好用,但是也有相应的使用场景.随着数据量的增长,redis已经不能满足现在的需求了.所以需要找个更好的替代品.问了一圈大牛,也google一番,锁定在[kafka](http://kafka.apache.org/)上了.关于**kafka**怎么"玩",我也不知道,算是在摸索当中,想要知道安装使用等方法,请移步Google吧.虽然kafka我不会玩,但是我会玩怎么监控它.
 
 * * *
 
