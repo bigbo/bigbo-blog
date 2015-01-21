@@ -98,7 +98,7 @@ SITEMAP = {
 #RANDOM = 'random.html'
 
 LICENSE = '转载请注明来源<a href="http://bigbo.github.io/" target="_blank">Bigbo</a>'
-
+#author="big"
 
 ## 顶部菜单项
 #MENUITEMS = [
