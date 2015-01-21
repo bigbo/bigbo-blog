@@ -49,7 +49,7 @@ rsyslog.x86_64                                      7.6.3-1.el6
 ##体验+设置
 使用需要在`rsyslog.conf`配置文件下或是相应的配置文件中加入`module(load="omkafka")`表示引入该模块.测试使用可以参照[文档中的示例](http://www.rsyslog.com/doc/master/configuration/modules/omkafka.html#example).
 
-其实文档是相当的简陋,使用示例感觉就是配置上仅仅能使用,更多更详细的根本没有介绍,索性[kafka官方的文档](http://kafka.apache.org/documentation.html#producerconfigs)是相当的详细.在使用的角度看,rsyslog目前是作为一个**Producer**的角色,所以可以依照kafka的文档的**3.3Producer Configs**章节设置,设置相应的参数可以放到`confParam`或是`topicConfParam`中就可以了.
+其实文档是相当的简陋,使用示例感觉就是配置上仅仅能使用,更多更详细的根本没有介绍,索性[kafka官方的文档](http://kafka.apache.org/documentation.html#producerconfigs)是相当的详细.在使用的角度看,rsyslog目前是作为一个**Producer**的角色,所以可以依照kafka的文档的**3.3Producer Configs**章节设置,设置相应的参数可以放到`confParam`或是`topicConfParam`中就可以了.当然这个参数列表不是无限任何参数都可以往里面仍,根据rsyslog官方文档对这个参数的表述是:其实**omkafka**是使用`librdkafka`连接卡夫卡的,所以参数实际上那些`librdkafka`支持的参数.
 
 仅仅测试的话,根据rsyslog官方文档中配置即可生效.更多的设置和方法还是参照kafka相关设置,以及经过自己充分测试再另行体验,由于我也是才接触配置,更多的使用也不太了解.没有文档真的很瞎啊,但是至少知道了大致怎么使用了.目前的体验来看`partitions.number`等参数是很好用的.
 
