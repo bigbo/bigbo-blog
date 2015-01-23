@@ -34,8 +34,10 @@ SOCIAL = (('atom', FEED_ALL_ATOM),
           ('Google+', 'https://plus.google.com/109995827478386248705'),
           ('Linkedin', 'https://lnkd.in/bsndpJX'),)
 
+GITHUB_URL = 'https://github.com/bigbo'
+
 ## 分页
-DEFAULT_PAGINATION = 2
+DEFAULT_PAGINATION = 3
 
 ## 静态目录设置
 STATIC_PATHS = ["pictures", ]
@@ -46,6 +48,7 @@ STATIC_PATHS = ["pictures", ]
 ## 主题设置
 #THEME = 'pelican-themes/pelican-bootstrap3'
 THEME = 'pelican-themes/pelican-fresh'
+THEME = '/home/jingbo.li/file/github/pelican-fresh'
 THEME_STATIC_DIR = 'theme'
 CSS_FILE = "main.css"
 
