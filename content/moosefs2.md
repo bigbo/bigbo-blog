@@ -15,14 +15,14 @@ Author: ljingb
 
 > master启动后,metalogger\chunker\client三个元素都能自动与master建立连接.
 
-> > 正常启动顺序：matser---chunker---metalogger---client.
+> > 正常启动顺序:matser---chunker---metalogger---client.
 
-> > 关闭顺序：client---chunker---metalogger---master
+> > 关闭顺序:client---chunker---metalogger---master
 
 * * *
 
 ##client操作影响
-> 客户端强制**kill -9**杀掉**mfsmount**进程,需要先**umount**,然后再**mount**,否则会提示：
+> 客户端强制**kill -9**杀掉**mfsmount**进程,需要先**umount**,然后再**mount**,否则会提示:
 
 ```
 fuse: bad mount point `/mnt/test/': Transport endpoint is not connected
@@ -38,7 +38,7 @@ see: /data/jingbo.li/mfs/bin/mfsmount -h for help
 * * *
 
 ##快照**snapshot**
-> 可以快照任何一个文件或目录,语法：**mfsmakesnapshot src dst**,但是src和dst必须都属于mfs体系,即不能mfs体系中的文件快照到其他文件系统.
+> 可以快照任何一个文件或目录,语法:**mfsmakesnapshot src dst**,但是src和dst必须都属于mfs体系,即不能mfs体系中的文件快照到其他文件系统.
 
 * * *
 
@@ -82,7 +82,7 @@ see: /data/jingbo.li/mfs/bin/mfsmount -h for help
 > 2. 利用同样的配置来配置这台mfsmaster(copy一份mfsmaster.cfg到备机)
 > 3. 找回metadata.mfs.back文件,可以从备份中找,也可以中metalogger主机中找(如果启动了metalogger服务),然后把metadata.mfs.back放入data目录,一般为${prefix}/var/mfs.
 > 4. 从在master宕掉之前的任何运行metalogger服务的服务器上拷贝最后metadata文件,然后放入mfsmaster的数据目录
-> 5. 利用mfsmetarestore命令合并元数据changelogs，可以用自动恢复模式mfsmetarestore –a，也可以利用非自动化恢复模式，语法如下：mfsmetarestore -m metadata.mfs.back -o metadata.mfs changelog_ml.*.mfs
+> 5. 利用mfsmetarestore命令合并元数据changelogs,可以用自动恢复模式mfsmetarestore –a,也可以利用非自动化恢复模式,语法如下:mfsmetarestore -m metadata.mfs.back -o metadata.mfs changelog_ml.*.mfs
 
 > ####DNS主从
 > * 详细的就需要看官网的手册了,不过CE版本不支持,需要用PRO版本才支持.具体好不好用我也不知道.
@@ -109,7 +109,7 @@ see: /data/jingbo.li/mfs/bin/mfsmount -h for help
 ##补充及总结
 算是对MFS实际应用做的一些总结,对于实际来说,使用情况会复杂的多,实际应用肯定会遇到好多的问题.后续根据使用情况再做些总结和规整.
 
-另外做些补充：
+另外做些补充:
 > 二次开发:[百度对Moosefs二次开发](https://github.com/ops-baidu/shadow-mfs),[相关文章](http://www.zhangxiaolong.org/archives/242.html)
 >
 > 使用:实际使用来看,不可能使用每个客户端使用的时候都去安装其客户端,造成使用不太方便,其实可以找一台机器挂载MFS后,在其上面搭建一个**FTP**等相关文件下载或是上传的服务,再加些权限限制,这样对使用者来说就非常方便和友好了.
