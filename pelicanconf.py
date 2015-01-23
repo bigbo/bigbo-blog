@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 AUTHOR = u'ljingb'
 SITENAME = u'BigBo\'s blog'
-SITEURL = u'http://bigbo.github.io/`'
+SITEURL = u'http://bigbo.github.io/'
 
 PATH = 'content'
 
@@ -48,7 +48,6 @@ STATIC_PATHS = ["pictures", ]
 ## 主题设置
 #THEME = 'pelican-themes/pelican-bootstrap3'
 THEME = 'pelican-themes/pelican-fresh'
-THEME = '/home/jingbo.li/file/github/pelican-fresh'
 THEME_STATIC_DIR = 'theme'
 CSS_FILE = "main.css"
 
