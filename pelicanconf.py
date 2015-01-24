@@ -55,6 +55,8 @@ CSS_FILE = "main.css"
 DISQUS_SITENAME = 'bigbo'
 DUOSHUO_SITENAME = 'bigbo'
 
+GOOGLE_ANALYTICS = "UA-58118410-1"
+
 ## 设置URL按照日期显示
 ARTICLE_URL = 'pages/{date:%Y}/{date:%m}/{date:%d}/{slug}/'
 ARTICLE_SAVE_AS = 'pages/{date:%Y}/{date:%m}/{date:%d}/{slug}/index.html'
