@@ -59,5 +59,13 @@ cd kafka-web-console-2.1.0-SNAPSHOT/bin
 nohup ./kafka-web-console >/dev/null 2>&1 &
 ```
 * * *
-##总结
+## 总结
+
 其实关于kafka相关的知识相当匮乏,林林总总的通过各种博客看了一些简介,摸着石头过河.后续有对kafka的研究再进行记录了解.
+
+** 提示: **
+
+关于kafka-web-console的使用要注意,实际使用发现,** 会产生过多的TCP连接,导致抢占过多系统资源不说还占用过多的系统端口 **.由于对java一窍不通,所以也没搞明白什么原因导致.另外其监控效果也不好,图形非常不准.
+
+推荐另外一个监控系统 ` KafkaOffsetMonitor ` ,用来实时监控Kafka集群的consumers以及它们在partition中的offset(偏移量).体验非常不错.唯一缺点是其中前端js部分可能用到了Google的前端公开库,导致身在天朝的人打开较慢或是直接打不开,需要注意下.
+
