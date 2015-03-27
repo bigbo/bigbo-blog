@@ -24,7 +24,7 @@ FEED_ATOM = ''
 ## 博客连接
 LINKS = (('Pelican Doc', 'http://pelican-docs-zh-cn.readthedocs.org/en/latest/'),
          (u'三斗室', 'http://chenlinux.com/'),
-         ('JingY', 'http://argcv.com/'),
+         ('argcv', 'http://argcv.com/'),
          ('Hailin Zeng', 'http://hailinzeng.github.io/'),)
          #('You can modify those links in your config file', '#'),)
 

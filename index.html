@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="author" content="ljingb" />
+    <meta name="robots" content="index, follow"/>
+
+    <meta property="og:title" content="BigBo's blog"/>
+    <meta property="og:url" content="http://bigbo.github.io"/>
+    <meta property="og:site_name" content="BigBo's blog"/>
+    <meta property="og:type" content="website"/>
+
+    <link rel="canonical" href="http://bigbo.github.io" />
+
+    <title>BigBo's blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="//libs.baidu.com/fontawesome/4.0.3/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="//libs.baidu.com/bootstrap/2.3.2/css/bootstrap.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="http://bigbo.github.io/theme/css/main.css" />
+    <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="BigBo's blog Atom Feed" />
+
+    <script type="text/javascript">var switchTo5x=true;</script>
+    <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+    <script type="text/javascript">
+        stLight.options({
+            publisher: "",
+            doNotHash: false,
+            doNotCopy: false,
+            hashAddressBar: false
+        });
+    </script>
+</head>
+
+<body id="index">
+<a class="hidden-phone" href="https://github.com/bigbo">
+<img style="position: absolute; top: 0; right: 0; border: 0;"
+src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Follow me on GitHub" />
+</a>
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <header id="banner" >
+                <h1>
+                    <a href="http://bigbo.github.io/">BigBo's blog </a>
+                </h1>
+                <nav class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li ><a href="http://bigbo.github.io/pages/about/">About</a></li>
+                            <li ><a href="http://bigbo.github.io/category/gui-dang.html">归档</a></li>
+                            <li ><a href="http://bigbo.github.io/category/technology.html">Technology</a></li>
+                        </ul>
+
+                    </div>
+                </nav>
+            </header><!-- /#banner -->
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <div class="row-fluid">
+<div class="span9">
+                <section>
+                    <ol id="posts-list" class="hfeed" start="2">
+                    <li>
+                        <article>
+                            <header>
+                                <h1 class="entry-title">
+                                    <a href="http://bigbo.github.io/pages/2015/03/26/logstash_performance/" rel="bookmark" title="Permalink to logstash-input-file以及logstash-output-kafka插件性能测试">
+                                       logstash-input-file以及logstash-output-kafka插件性能测试
+                                    </a>
+                                </h1>
+                            </header>
+                            <div class="entry-content">
+<footer class="post-info">
+    <address class="vcard author">
+        by <a class="url fn" href="http://bigbo.github.io/author/ljingb.html">ljingb</a>
+    </address>
+
+    in <a href="http://bigbo.github.io/category/technology.html">Technology</a>
+
+    on 2015-03-26
+
+        |
+        tags:         <a href="http://bigbo.github.io/tag/kafka.html">kafka</a>
+        <a href="http://bigbo.github.io/tag/xiao-xi-dui-lie.html">消息队列</a>
+        <a href="http://bigbo.github.io/tag/logstashcha-jian.html">logstash插件</a>
+        <a href="http://bigbo.github.io/tag/ri-zhi-chu-li.html">日志处理</a>
+
+
+        |
+        <a href="http://bigbo.github.io/pages/2015/03/26/logstash_performance/#disqus_thread">comments</a>
+
+    
+</footer><!-- /.post-info -->                                <p>最近项目需求,要了解下logstash的一些性能,根据现有的技术方案,主要是针对 <code>logstash-input-file</code> 插件以及 <code>logstash-output-kafka</code> 插件进行测试,不过最近关注 logstash 的人应该清楚,目前处于新老版本迭代期,老版本<a href="https://download.elasticsearch.org/logstash/logstash/logstash-1.4.2.tar.gz">1.4.2版本</a> 和新版本 <a href="http://download.elasticsearch.org/logstash/logstash/logstash-1.5.0.rc2.tar.gz">1.5.0RC2版本</a> ,<a href="http://chenlinux.com/2015/02/10/logstash-outputs-elasticsearch-http-memory-leak/">1.4.2版本内存泄露</a> 问题在1.5版本后得到改进,但是1.5还没出正式版本.以下是根据1.5RC2版本来进行测试对比.</p>
+<p>硬件环境:</p>
+<table>
+<thead>
+<tr>
+<th>CPU</th>
+<th>硬盘</th>
+<th>内存</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Intel CorporationXeonE5 v2/Core i7</td>
+<td>2TX1</td>
+<td>128G</td>
+</tr>
+</tbody>
+</table>
+<blockquote></blockquote>
+<p>软件环境:</p>
+<table>
+<thead>
+<tr>
+<th>系统</th>
+<th align="center">java_jdk</th>
+<th align="center">JVM</th>
+<th align="center">Kafka Configuration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>centos6.5</td>
+<td align="center">1.7 ...</td></tr></tbody></table>
+                                <p class="readmore">
+                                    <a class="btn btn-small btn-info" href="http://bigbo.github.io/pages/2015/03/26/logstash_performance/">Read more...</a>
+                                </p>
+                            </div><!-- /.entry-content -->
+                            <hr/>
+                        </article>
+                    </li>
+                    <li>
+                        <article>
+                            <header>
+                                <h1 class="entry-title">
+                                    <a href="http://bigbo.github.io/pages/2015/02/28/elasticsearch_hadoop/" rel="bookmark" title="Permalink to elasticsearch之hadoop插件使用">
+                                       elasticsearch之hadoop插件使用
+                                    </a>
+                                </h1>
+                            </header>
+                            <div class="entry-content">
+<footer class="post-info">
+    <address class="vcard author">
+        by <a class="url fn" href="http://bigbo.github.io/author/ljingb.html">ljingb</a>
+    </address>
+
+    in <a href="http://bigbo.github.io/category/technology.html">Technology</a>
+
+    on 2015-02-28
+
+        |
+        tags:         <a href="http://bigbo.github.io/tag/elasticsearch-kuai-zhao.html">elasticsearch 快照</a>
+        <a href="http://bigbo.github.io/tag/elasticsearch-plugin.html">elasticsearch plugin</a>
+        <a href="http://bigbo.github.io/tag/hdfs.html">HDFS</a>
+
+
+        |
+        <a href="http://bigbo.github.io/pages/2015/02/28/elasticsearch_hadoop/#disqus_thread">comments</a>
+
+    
+</footer><!-- /.post-info -->                                <h2>elastic与Hadoop的连接</h2>
+<p>几个月前,由于资源有限,而需求无限,不得已想到es与hadoop的连接,本来想的很好,尝试把HDFS作为es的存储后端,把index存入HDFS中,这样就能节省存储空间了.当然官网也有相关使用配置(这里就不介绍了),经过几天的奋斗还是没能实现当初的想法,也幸亏没实现,实现了性能也是一大坑(猜测性能非常差以至于官方的 <a href="https://github.com/elastic/elasticsearch-hdfs">elasticsearch-hdfs</a> 插件都几年没更新了!).</p>
+<p>不过倒是尝试了把HDFS作为后端存储,可以实现备份elasticsearch数据快照到HDFS或者是从HDFS中恢复数据.选择插件 <a href="https://github.com/elastic/elasticsearch-hadoop/tree/master/repository-hdfs">repository-hdfs</a>,其实就是使用了ES的 <code>snapshot/restore</code> 功能.</p>
+<h2>安装插件</h2>
+<p>我的es版本为 <code>1.3.9-1</code>,注意: <code>1.3.0-1.3.7 and 1.4.0-1.4.2</code> 存在<a href="https://www.elastic.co/blog/elasticsearch-1-4-3-and-1-3-8-released/">Grooy漏洞</a>,所以选择版本的时候注意下,插件选择版本对应为2.0.2,后端Hadoop为2.5 ...</p>
+                                <p class="readmore">
+                                    <a class="btn btn-small btn-info" href="http://bigbo.github.io/pages/2015/02/28/elasticsearch_hadoop/">Read more...</a>
+                                </p>
+                            </div><!-- /.entry-content -->
+                            <hr/>
+                        </article>
+                    </li>
+                    <li>
+                        <article>
+                            <header>
+                                <h1 class="entry-title">
+                                    <a href="http://bigbo.github.io/pages/2015/01/23/logstash_kafka/" rel="bookmark" title="Permalink to logstash的kafka插件使用">
+                                       logstash的kafka插件使用
+                                    </a>
+                                </h1>
+                            </header>
+                            <div class="entry-content">
+<footer class="post-info">
+    <address class="vcard author">
+        by <a class="url fn" href="http://bigbo.github.io/author/ljingb.html">ljingb</a>
+    </address>
+
+    in <a href="http://bigbo.github.io/category/technology.html">Technology</a>
+
+    on 2015-01-23
+
+        |
+        tags:         <a href="http://bigbo.github.io/tag/kafka.html">kafka</a>
+        <a href="http://bigbo.github.io/tag/xiao-xi-dui-lie.html">消息队列</a>
+        <a href="http://bigbo.github.io/tag/logstash.html">logstash</a>
+        <a href="http://bigbo.github.io/tag/ri-zhi-chu-li.html">日志处理</a>
+
+
+        |
+        <a href="http://bigbo.github.io/pages/2015/01/23/logstash_kafka/#disqus_thread">comments</a>
+
+    
+</footer><!-- /.post-info -->                                <h2>前言</h2>
+<p>关于logstash可以产看其 <a href="http://logstash.net/">官网</a> ,对于英文有障碍的人士,或是想知道更多插件使用技巧的用户请移步 <a href="http://chenlinux.com/">@三斗室</a> 所著作 <a href="https://github.com/bigbo/logstash-best-practice-cn">logstash最佳实战</a> ,本片内容已经并入其中相关章节.</p>
+<hr />
+<h2>Logstash-kafka简介</h2>
+<p><a href="https://github.com/joekiller/logstash-kafka">https://github.com/joekiller/logstash-kafka</a></p>
+<p>插件已经正式合并进官方仓库，以下使用介绍基于<strong>logstash 1.4相关版本</strong>，1.5及以后版本的使用后续依照官方文档持续更新。</p>
+<p>插件本身内容非常简单，其主要依赖同一作者写的 <a href="https://github.com/joekiller/jruby-kafka">jruby-kafka</a> 模块。需要注意的是：<strong>该模块仅支持 Kafka－0.8 版本。如果是使用 0.7 版本 kafka 的，将无法直接使 jruby-kafka 该模块和 logstash-kafka 插件。</strong></p>
+<h2>安装</h2>
+<ul>
+<li>安装按照官方文档完全自动化的安装.或是可以通过以下方式手动自己安装插件，不过重点注意的是 <strong>kafka 的版本</strong>，上面已经指出了 ...</li></ul>
+                                <p class="readmore">
+                                    <a class="btn btn-small btn-info" href="http://bigbo.github.io/pages/2015/01/23/logstash_kafka/">Read more...</a>
+                                </p>
+                            </div><!-- /.entry-content -->
+                            <hr/>
+                        </article>
+                    </li>
+                    </ol><!-- /#posts-list -->
+<p class="paginator">
+    Page 1 / 4
+        <a href="http://bigbo.github.io/index2.html">&raquo;</a>
+</p>
+                </section><!-- /#content -->
+</div>
+<div class="span3">
+    <section id="sidebar">
+            <div>
+                <h2>Browse content by</h2>
+                <ul class="fa-ul">
+                <li><a href="http://bigbo.github.io/categories.html"><i class="fa-li fa fa-tags"></i> Categories</a></li>
+                <li><a href="http://bigbo.github.io/archives.html"><i class="fa-li fa fa-calendar"></i> Dates</a></li>
+                <li><a href="http://bigbo.github.io/tags.html"><i class="fa-li fa fa-tag"></i> Tags</a></li>
+
+                <li><a href="/feeds/all.atom.xml"><i class="fa-li fa fa-rss"></i> Feed</a></li>
+                </ul>
+            </div><!-- /.browse -->
+            <div>
+                <h2>Links</h2>
+                <ul>
+                    <li><a href="http://pelican-docs-zh-cn.readthedocs.org/en/latest/">Pelican Doc</a></li>
+                    <li><a href="http://chenlinux.com/">三斗室</a></li>
+                    <li><a href="http://argcv.com/">argcv</a></li>
+                    <li><a href="http://hailinzeng.github.io/">Hailin Zeng</a></li>
+                </ul>
+            </div><!-- /.Links -->
+            <div>
+                <h2>Social</h2>
+                <ul>
+                    <li><a href="feeds/all.atom.xml">atom</a></li>
+                    <li><a href="https://github.com/bigbo">GitHub</a></li>
+                    <li><a href="https://plus.google.com/109995827478386248705">Google+</a></li>
+                    <li><a href="https://lnkd.in/bsndpJX">Linkedin</a></li>
+                </ul>
+            </div><!-- /.social -->
+            <div>
+                <h2>Tags</h2>
+                <ul id="cloud">
+                     <li class="tag-1"><a href="http://bigbo.github.io/tag/xiao-xi-dui-lie.html">消息队列</a></li>
+                     <li class="tag-1"><a href="http://bigbo.github.io/tag/kafka.html">kafka</a></li>
+                     <li class="tag-4"><a href="http://bigbo.github.io/tag/logstash.html">logstash</a></li>
+                     <li class="tag-4"><a href="http://bigbo.github.io/tag/hdfs.html">HDFS</a></li>
+                     <li class="tag-2"><a href="http://bigbo.github.io/tag/ri-zhi-chu-li.html">日志处理</a></li>
+                     <li class="tag-1"><a href="http://bigbo.github.io/tag/fen-bu-shi-wen-jian-xi-tong.html">分布式文件系统</a></li>
+                     <li class="tag-4"><a href="http://bigbo.github.io/tag/pelican_plugin.html">pelican_plugin</a></li>
+                     <li class="tag-4"><a href="http://bigbo.github.io/tag/logstashcha-jian.html">logstash插件</a></li>
+                     <li class="tag-4"><a href="http://bigbo.github.io/tag/rsyslog.html">rsyslog</a></li>
+                     <li class="tag-2"><a href="http://bigbo.github.io/tag/github-pages.html">github pages</a></li>
+                     <li class="tag-4"><a href="http://bigbo.github.io/tag/pelican.html">pelican</a></li>
+                     <li class="tag-4"><a href="http://bigbo.github.io/tag/jian-kong.html">监控</a></li>
+                     <li class="tag-1"><a href="http://bigbo.github.io/tag/fen-bu-shi-cun-chu.html">分布式存储</a></li>
+                     <li class="tag-1"><a href="http://bigbo.github.io/tag/moosefs.html">Moosefs</a></li>
+                     <li class="tag-4"><a href="http://bigbo.github.io/tag/elasticsearch-kuai-zhao.html">elasticsearch 快照</a></li>
+                     <li class="tag-4"><a href="http://bigbo.github.io/tag/elasticsearch-plugin.html">elasticsearch plugin</a></li>
+                </ul>
+             </div>
+<!-- /.Tags -->
+    </section><!-- /#sidebar -->
+</div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="site-footer">
+        <div class="row-fluid">
+            <div class="span10 offset1">
+                <address>
+                    <p>
+                    Copyright 2014-2015 by <a href="http://bigbo.github.io/">ljingb</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                    </p>
+                    <p>
+                    Powered by <a href="http://getpelican.com/">Pelican</a>,<a href="http://github.com/jsliang/pelican-fresh/">Fresh</a> is a responsive theme designed by <a href="http://jsliang.com/">jsliang</a> and <a href="https://github.com/jsliang/pelican-fresh/graphs/contributors">contributors</a>.
+                    </p>
+                </address>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-58118410-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+    <script src="//libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <script src="//libs.baidu.com/bootstrap/2.3.2/css/bootstrap.min.css"></script>
+</body>
+</html>

@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="author" content="ljingb" />
+    <meta name="robots" content="index, follow"/>
+
+    <meta property="og:title" content="logstash-input-file以及logstash-output-kafka插件性能测试"/>
+    <meta property="og:url" content="http://bigbo.github.io/pages/2015/03/26/logstash_performance/"/>
+    <meta property="og:site_name" content="BigBo's blog"/>
+    <meta property="og:type" content="article"/>
+
+    <link rel="canonical" href="http://bigbo.github.io/pages/2015/03/26/logstash_performance/" />
+
+    <title>logstash-input-file以及logstash-output-kafka插件性能测试 | BigBo's blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="//libs.baidu.com/fontawesome/4.0.3/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="//libs.baidu.com/bootstrap/2.3.2/css/bootstrap.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="http://bigbo.github.io/theme/css/main.css" />
+    <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="BigBo's blog Atom Feed" />
+
+    <script type="text/javascript">var switchTo5x=true;</script>
+    <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+    <script type="text/javascript">
+        stLight.options({
+            publisher: "",
+            doNotHash: false,
+            doNotCopy: false,
+            hashAddressBar: false
+        });
+    </script>
+</head>
+
+<body id="index">
+<a class="hidden-phone" href="https://github.com/bigbo">
+<img style="position: absolute; top: 0; right: 0; border: 0;"
+src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Follow me on GitHub" />
+</a>
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <header id="banner" >
+                <h1>
+                    <a href="http://bigbo.github.io/">BigBo's blog </a>
+                </h1>
+                <nav class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li ><a href="http://bigbo.github.io/pages/about/">About</a></li>
+                            <li ><a href="http://bigbo.github.io/category/gui-dang.html">归档</a></li>
+                            <li class="active"><a href="http://bigbo.github.io/category/technology.html">Technology</a></li>
+                        </ul>
+
+                    </div>
+                </nav>
+            </header><!-- /#banner -->
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <div class="row-fluid">
+<div class="span10 offset1">
+  <section>
+    <article>
+      <header>
+        <h1 class="entry-title">
+          <a href="http://bigbo.github.io/pages/2015/03/26/logstash_performance/" rel="bookmark"
+             title="Permalink to logstash-input-file以及logstash-output-kafka插件性能测试">logstash-input-file以及logstash-output-kafka插件性能测试</a></h1>
+      </header>
+      <div class="entry-content">
+<footer class="post-info">
+    <address class="vcard author">
+        by <a class="url fn" href="http://bigbo.github.io/author/ljingb.html">ljingb</a>
+    </address>
+
+    in <a href="http://bigbo.github.io/category/technology.html">Technology</a>
+
+    on 2015-03-26
+
+        |
+        tags:         <a href="http://bigbo.github.io/tag/kafka.html">kafka</a>
+        <a href="http://bigbo.github.io/tag/xiao-xi-dui-lie.html">消息队列</a>
+        <a href="http://bigbo.github.io/tag/logstashcha-jian.html">logstash插件</a>
+        <a href="http://bigbo.github.io/tag/ri-zhi-chu-li.html">日志处理</a>
+
+
+        |
+        <a href="http://bigbo.github.io/pages/2015/03/26/logstash_performance/#disqus_thread">comments</a>
+
+    
+</footer><!-- /.post-info -->
+
+        <p>最近项目需求,要了解下logstash的一些性能,根据现有的技术方案,主要是针对 <code>logstash-input-file</code> 插件以及 <code>logstash-output-kafka</code> 插件进行测试,不过最近关注 logstash 的人应该清楚,目前处于新老版本迭代期,老版本<a href="https://download.elasticsearch.org/logstash/logstash/logstash-1.4.2.tar.gz">1.4.2版本</a> 和新版本 <a href="http://download.elasticsearch.org/logstash/logstash/logstash-1.5.0.rc2.tar.gz">1.5.0RC2版本</a> ,<a href="http://chenlinux.com/2015/02/10/logstash-outputs-elasticsearch-http-memory-leak/">1.4.2版本内存泄露</a> 问题在1.5版本后得到改进,但是1.5还没出正式版本.以下是根据1.5RC2版本来进行测试对比.</p>
+<p>硬件环境:</p>
+<table>
+<thead>
+<tr>
+<th>CPU</th>
+<th>硬盘</th>
+<th>内存</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Intel CorporationXeonE5 v2/Core i7</td>
+<td>2TX1</td>
+<td>128G</td>
+</tr>
+</tbody>
+</table>
+<blockquote></blockquote>
+<p>软件环境:</p>
+<table>
+<thead>
+<tr>
+<th>系统</th>
+<th align="center">java_jdk</th>
+<th align="center">JVM</th>
+<th align="center">Kafka Configuration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>centos6.5</td>
+<td align="center">1.7.0_65</td>
+<td align="center">-Xmx2000m -Xss2048k(其他默认)</td>
+<td align="center">Replica X1 Partition X1</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>各版本之间性能对比</h2>
+<h3>裸跑性能</h3>
+<p>先测试下两个版本裸跑性能(不加任何filter),官方在之前也出过关于为什么用JRuby而不是用MRI的 <a href="https://gist.github.com/jordansissel/4171039">性能测试报告</a>,以下测试也选择官方的测试方法:使用 <code>generator</code> 插件产生数据,然后使用 <code>pv</code> 命令做性能监控.out.conf文件如下:</p>
+<div class="highlight"><pre>input {
+ generator { count =&gt; 5000000 }
+}
+
+output {
+    stdout {
+        codec =&gt; dots
+    }
+}
+</pre></div>
+
+
+<div class="highlight"><pre><span class="nv">$ </span>./bin/logstash agent -f out.conf <span class="p">|</span> pv -Wbart &gt; /dev/null
+</pre></div>
+
+
+<ul>
+<li>注意:centos下yum安装的 <code>pv</code> 版本相对较低,没有 <code>-a</code> 这个参数,使用起来不太好观察,可以选择更新下 <a href="http://pkgs.repoforge.org/pv/">新版本</a>.</li>
+</ul>
+<p>logstash1.4.2裸跑性能:</p>
+<div class="highlight"><pre>1.53MiB 0:00:34 [47.2kiB/s] [46.2kiB/s]
+1.97MiB 0:00:44 [37.9kiB/s] [45.9kiB/s]
+2.81MiB 0:01:03 [38.3kiB/s] [45.7kiB/s]
+</pre></div>
+
+
+<p>logstash1.5.0RC2裸跑性能:</p>
+<div class="highlight"><pre>1.41MiB 0:00:52 [25.6kiB/s] [27.8kiB/s]
+1.65MiB 0:01:00 [  26kiB/s] [28.1kiB/s]
+2.19MiB 0:01:19 [  31kiB/s] [28.4kiB/s]
+</pre></div>
+
+
+<p>裸跑性能见分晓了.不解的是不知道为什么1.5RC2的版本与1.4.2版本的差距那么大.好奇心的驱使,去翻了下github的 <a href="https://github.com/elastic/logstash/issues/2870#issuecomment-86515699">issues</a>.看来确实新版本有些性能倒退,根据上面说的使用其修改版本 <code>fix/perf_regression</code> 测试性能如下:</p>
+<div class="highlight"><pre> 941kiB 0:00:26 [31.9kiB/s] [36.2kiB/s]
+2.86MiB 0:01:20 [36.2kiB/s] [36.2kiB/s]
+</pre></div>
+
+
+<p>对比修改前1.5.0RC2版本确实有提升(其实提升性能更大的是在filter的时候).但实际测试提升没有issues中作者写的那么大.</p>
+<h3>logstash-input-file性能对比</h3>
+<p>有了上面的结果现在对后续结果也有些预估,下面的测试只需把上面的配置文件稍作修改,修改成监听文件模式:</p>
+<div class="highlight"><pre>input {
+    file {
+        path =&gt; &quot;/data0/lijingbo/0.log&quot;
+     }
+}
+
+output {
+    stdout {
+             codec =&gt; dots
+    }
+}
+</pre></div>
+
+
+<p>命令同上:</p>
+<div class="highlight"><pre><span class="nv">$ </span>./bin/logstash agent -f out.conf <span class="p">|</span> pv -Wbart &gt; /dev/null
+</pre></div>
+
+
+<p>logstash1.4.2性能:</p>
+<div class="highlight"><pre>2.31MiB 0:01:18 [34.9kiB/s] [30.3kiB/s]
+2.39MiB 0:01:21 [27.3kiB/s] [30.3kiB/s]
+2.48MiB 0:01:24 [34.7kiB/s] [30.3kiB/s]
+2.65MiB 0:01:29 [42.3kiB/s] [30.5kiB/s]
+2.81MiB 0:01:34 [  36kiB/s] [30.6kiB/s]
+</pre></div>
+
+
+<p>logstash1.5.0RC2性能:</p>
+<div class="highlight"><pre> 376kiB 0:00:20 [23.9kiB/s] [18.8kiB/s]
+ 498kiB 0:00:25 [27.1kiB/s] [19.9kiB/s]
+ 777kiB 0:00:39 [22.4kiB/s] [19.9kiB/s]
+ 2.08MiB 0:01:44 [20.1kiB/s] [20.4kiB/s]
+</pre></div>
+
+
+<p>logstash1.5.0fix版本性能:</p>
+<div class="highlight"><pre> 673kiB 0:00:27 [  31kiB/s] [24.9kiB/s]
+ 896kiB 0:00:36 [26.5kiB/s] [24.9kiB/s]
+1.09MiB 0:00:45 [25.3kiB/s] [24.8kiB/s]
+1.86MiB 0:01:17 [19.1kiB/s] [24.7kiB/s]
+1.91MiB 0:01:19 [29.7kiB/s] [24.8kiB/s]
+</pre></div>
+
+
+<p>通过上面的结果,高下立判了.对于文件读取直接输出转发的话还是1.4.2性能比较好.</p>
+<hr />
+<h3>logstash-output-kafka性能对比</h3>
+<p>对于kafka的输出,由于 <code>1.4.2版本</code> 当时没有把kafka的插件并入到logstash的默认设置里.所以在此选择手工安装 <a href="http://bigbo.github.io/pages/2015/01/23/logstash_kafka/">此前介绍过</a>,所选各个插件版本如下:</p>
+<ul>
+<li>
+<p>logstash1.4.2 + kafka_2.10-0.8.1.1 + logstash-kafka-0.6.2 + jruby-kafka-0.2.1-java</p>
+</li>
+<li>
+<p>logstash 1.5.0RC2 + logstash-output-kafka 0.1.8</p>
+</li>
+<li>
+<p><a href="https://github.com/elastic/logstash/tree/fix/perf_regression">logstash 1.5.0 (fix/perf_regression branch)</a> + logstash-output-kafka 0.1.8</p>
+</li>
+</ul>
+<p>对此其实可以根据github上的issues追溯到还是之前的作者对此方面有 <a href="https://github.com/elastic/logstash/issues/2899">相关测试</a></p>
+<hr />
+<h4>同步模式</h4>
+<p>配置文件如下:</p>
+<div class="highlight"><pre>input {
+ generator { count =&gt; 30000000 }
+}
+
+output {
+    stdout {
+             codec =&gt; dots
+    }
+  kafka {
+    broker_list =&gt; &quot;localhost:9092&quot;
+    topic_id =&gt; &quot;test&quot;
+    compression_codec =&gt; &quot;snappy&quot;
+  }
+}
+</pre></div>
+
+
+<p>以上配置其实就是默认配置,默认配置一些选项未列出,其实默认配置走的是 <code>sync</code> 模式.</p>
+<p>执行命令:</p>
+<div class="highlight"><pre><span class="nv">$ </span>./bin/logstash agent -f out.conf <span class="p">|</span> pv -Wbart &gt; /dev/null
+</pre></div>
+
+
+<p>logstash1.4.2 + kafka_2.10-0.8.1.1 + logstash-kafka-0.6.2 + jruby-kafka-0.2.1-java 性能:</p>
+<div class="highlight"><pre> 191kiB 0:01:04 [3.54kiB/s] [   3kiB/s]
+ 233kiB 0:01:17 [2.92kiB/s] [3.04kiB/s]
+ 275kiB 0:01:29 [3.71kiB/s] [ 3.1kiB/s]
+ 329kiB 0:01:45 [3.08kiB/s] [3.14kiB/s]
+</pre></div>
+
+
+<p>logstash 1.5.0RC2 + logstash-output-kafka 0.1.8 性能:</p>
+<div class="highlight"><pre> 456kiB 0:01:32 [5.41kiB/s] [4.96kiB/s]
+ 505kiB 0:01:41 [5.88kiB/s] [   5kiB/s]
+ 557kiB 0:01:51 [4.85kiB/s] [5.02kiB/s]
+ 598kiB 0:01:59 [5.69kiB/s] [5.03kiB/s]
+</pre></div>
+
+
+<p>logstash 1.5.0 (fix/perf_regression branch) + logstash-output-kafka 0.1.8 性能:</p>
+<div class="highlight"><pre> 440kiB 0:01:15 [7.09kiB/s] [5.88kiB/s]
+ 569kiB 0:01:34 [7.03kiB/s] [6.05kiB/s]
+ 616kiB 0:01:41 [7.21kiB/s] [ 6.1kiB/s]
+ 630kiB 0:01:43 [7.44kiB/s] [6.12kiB/s]
+</pre></div>
+
+
+<hr />
+<h4>异步模式</h4>
+<p>配置文件如下:</p>
+<div class="highlight"><pre>input {
+ generator { count =&gt; 30000000 }
+}
+
+output {
+    stdout {
+             codec =&gt; dots
+    }
+
+  kafka {
+    topic_id =&gt; &quot;test&quot;
+    compression_codec =&gt; &quot;snappy&quot;
+    request_required_acks =&gt; 1
+    serializer_class =&gt; &quot;kafka.serializer.StringEncoder&quot;
+    request_timeout_ms =&gt; 10000
+    producer_type =&gt; &#39;async&#39;
+    message_send_max_retries =&gt; 5
+    retry_backoff_ms =&gt; 100
+    queue_buffering_max_ms =&gt; 5000
+    queue_buffering_max_messages =&gt; 10000
+    queue_enqueue_timeout_ms =&gt; -1
+    batch_num_messages =&gt; 1000
+  }
+}
+</pre></div>
+
+
+<p>此配置其实同issues上的配置相同,主要是我上面测试出来的跟已有的结果差距甚大,顾选择此配置再次测试.</p>
+<p>logstash1.4.2 + kafka_2.10-0.8.1.1 + logstash-kafka-0.6.2 + jruby-kafka-0.2.1-java 性能:</p>
+<div class="highlight"><pre> 796kiB 0:01:07 [12.6kiB/s] [11.9kiB/s]
+ 834kiB 0:01:10 [  12kiB/s] [11.9kiB/s]
+ 967kiB 0:01:20 [13.7kiB/s] [12.1kiB/s]
+1.08MiB 0:01:31 [12.5kiB/s] [12.1kiB/s]
+1.11MiB 0:01:33 [15.7kiB/s] [12.2kiB/s]
+</pre></div>
+
+
+<p>logstash 1.5.0RC2 + logstash-output-kafka 0.1.8 性能:</p>
+<div class="highlight"><pre> 649kiB 0:01:14 [7.79kiB/s] [8.77kiB/s]
+ 711kiB 0:01:20 [11.6kiB/s] [8.89kiB/s]
+ 769kiB 0:01:26 [10.4kiB/s] [8.95kiB/s]
+ 901kiB 0:01:39 [9.31kiB/s] [ 9.1kiB/s]
+</pre></div>
+
+
+<p>logstash 1.5.0 (fix/perf_regression branch) + logstash-output-kafka 0.1.8 性能:</p>
+<div class="highlight"><pre> 712kiB 0:01:16 [9.66kiB/s] [9.38kiB/s]
+ 765kiB 0:01:21 [11.4kiB/s] [9.45kiB/s]
+ 843kiB 0:01:29 [10.5kiB/s] [9.48kiB/s]
+ 884kiB 0:01:33 [  11kiB/s] [9.51kiB/s]
+ 945kiB 0:01:39 [9.38kiB/s] [9.55kiB/s]
+</pre></div>
+
+
+<p>结果显而易见了.不知道1.5版本性能问题会不会到正式解决或是提高.到时再来测试一翻.</p>
+<h3>logstash-input-file + logstash-out-kafka 性能对比</h3>
+<p>既然单独的插件测试过了, 综合的测试下两个一起使用的效果.所有条件均同上,差别仅是配置文件(异步模式).</p>
+<div class="highlight"><pre>input {
+  file {
+    path =&gt; &quot;/data0/lijingbo/0.log&quot;
+  }
+}
+
+output {
+  stdout {
+    codec =&gt; dots
+  }
+  kafka {
+    topic_id =&gt; &quot;test&quot;
+    compression_codec =&gt; &quot;snappy&quot;
+    request_required_acks =&gt; 1
+    serializer_class =&gt; &quot;kafka.serializer.StringEncoder&quot;
+    request_timeout_ms =&gt; 10000
+    producer_type =&gt; &#39;async&#39;
+    message_send_max_retries =&gt; 5
+    retry_backoff_ms =&gt; 100
+    queue_buffering_max_ms =&gt; 5000
+    queue_buffering_max_messages =&gt; 10000
+    queue_enqueue_timeout_ms =&gt; -1
+    batch_num_messages =&gt; 1000
+  }
+}
+</pre></div>
+
+
+<p>命令执行同之前.</p>
+<p>logstash1.4.2性能:</p>
+<div class="highlight"><pre> 735kiB 0:01:28 [12.9kiB/s] [8.36kiB/s]
+ 832kiB 0:01:36 [10.2kiB/s] [8.67kiB/s]
+ 898kiB 0:01:41 [14.1kiB/s] [ 8.9kiB/s]
+ 946kiB 0:01:45 [13.6kiB/s] [9.01kiB/s]
+</pre></div>
+
+
+<p>logstash1.5RC2性能:</p>
+<div class="highlight"><pre> 720kiB 0:01:21 [11.6kiB/s] [8.89kiB/s]
+ 792kiB 0:01:29 [8.74kiB/s] [8.91kiB/s]
+ 851kiB 0:01:35 [10.1kiB/s] [8.96kiB/s]
+ 891kiB 0:01:39 [9.92kiB/s] [   9kiB/s]
+</pre></div>
+
+
+<p>logstash1.5fix性能:</p>
+<div class="highlight"><pre> 986kiB 0:01:42 [10.8kiB/s] [9.67kiB/s]
+ 998kiB 0:01:43 [12.4kiB/s] [ 9.7kiB/s]
+1.04MiB 0:01:50 [10.7kiB/s] [9.69kiB/s]
+1.12MiB 0:01:58 [11.3kiB/s] [9.69kiB/s]
+</pre></div>
+
+
+<p>测试后感觉与想象中有些差距,对1.5正式版性能稳定性提升抱有希望.后续会跟进,做一些其他更多相关测试.</p>
+
+      </div><!-- /.entry-content -->
+
+        <div class="comments">
+                <h2>Comments !</h2>
+                    <!-- Duoshuo Comment BEGIN -->
+                        <div class="ds-thread"></div>
+                            <script type="text/javascript">
+        var duoshuoQuery = {short_name:"bigbo"};
+  (function() {
+      var ds = document.createElement('script');
+         ds.type = 'text/javascript';ds.async = true;
+            ds.src = 'http://static.duoshuo.com/embed.js';
+               ds.charset = 'UTF-8';
+                  (document.getElementsByTagName('head')[0]
+                       || document.getElementsByTagName('body')[0]).appendChild(ds);
+
+                     })();
+  </script>
+    <noscript>Please enable JavaScript to view the comments.</noscript>
+    <!-- Duoshuo Comment END -->
+
+
+    </article>
+  </section>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="site-footer">
+        <div class="row-fluid">
+            <div class="span10 offset1">
+                <address>
+                    <p>
+                    Copyright 2014-2015 by <a href="http://bigbo.github.io/">ljingb</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                    </p>
+                    <p>
+                    Powered by <a href="http://getpelican.com/">Pelican</a>,<a href="http://github.com/jsliang/pelican-fresh/">Fresh</a> is a responsive theme designed by <a href="http://jsliang.com/">jsliang</a> and <a href="https://github.com/jsliang/pelican-fresh/graphs/contributors">contributors</a>.
+                    </p>
+                </address>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-58118410-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+    <script src="//libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <script src="//libs.baidu.com/bootstrap/2.3.2/css/bootstrap.min.css"></script>
+</body>
+</html>

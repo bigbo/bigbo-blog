@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="author" content="ljingb" />
+    <meta name="robots" content="index, follow"/>
+
+    <meta property="og:title" content="elasticsearch之hadoop插件使用"/>
+    <meta property="og:url" content="http://bigbo.github.io/pages/2015/02/28/elasticsearch_hadoop/"/>
+    <meta property="og:site_name" content="BigBo's blog"/>
+    <meta property="og:type" content="article"/>
+
+    <link rel="canonical" href="http://bigbo.github.io/pages/2015/02/28/elasticsearch_hadoop/" />
+
+    <title>elasticsearch之hadoop插件使用 | BigBo's blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="//libs.baidu.com/fontawesome/4.0.3/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="//libs.baidu.com/bootstrap/2.3.2/css/bootstrap.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="http://bigbo.github.io/theme/css/main.css" />
+    <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="BigBo's blog Atom Feed" />
+
+    <script type="text/javascript">var switchTo5x=true;</script>
+    <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+    <script type="text/javascript">
+        stLight.options({
+            publisher: "",
+            doNotHash: false,
+            doNotCopy: false,
+            hashAddressBar: false
+        });
+    </script>
+</head>
+
+<body id="index">
+<a class="hidden-phone" href="https://github.com/bigbo">
+<img style="position: absolute; top: 0; right: 0; border: 0;"
+src="http://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Follow me on GitHub" />
+</a>
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <header id="banner" >
+                <h1>
+                    <a href="http://bigbo.github.io/">BigBo's blog </a>
+                </h1>
+                <nav class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li ><a href="http://bigbo.github.io/pages/about/">About</a></li>
+                            <li ><a href="http://bigbo.github.io/category/gui-dang.html">归档</a></li>
+                            <li class="active"><a href="http://bigbo.github.io/category/technology.html">Technology</a></li>
+                        </ul>
+
+                    </div>
+                </nav>
+            </header><!-- /#banner -->
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <div class="row-fluid">
+<div class="span10 offset1">
+  <section>
+    <article>
+      <header>
+        <h1 class="entry-title">
+          <a href="http://bigbo.github.io/pages/2015/02/28/elasticsearch_hadoop/" rel="bookmark"
+             title="Permalink to elasticsearch之hadoop插件使用">elasticsearch之hadoop插件使用</a></h1>
+      </header>
+      <div class="entry-content">
+<footer class="post-info">
+    <address class="vcard author">
+        by <a class="url fn" href="http://bigbo.github.io/author/ljingb.html">ljingb</a>
+    </address>
+
+    in <a href="http://bigbo.github.io/category/technology.html">Technology</a>
+
+    on 2015-02-28
+
+        |
+        tags:         <a href="http://bigbo.github.io/tag/elasticsearch-kuai-zhao.html">elasticsearch 快照</a>
+        <a href="http://bigbo.github.io/tag/elasticsearch-plugin.html">elasticsearch plugin</a>
+        <a href="http://bigbo.github.io/tag/hdfs.html">HDFS</a>
+
+
+        |
+        <a href="http://bigbo.github.io/pages/2015/02/28/elasticsearch_hadoop/#disqus_thread">comments</a>
+
+    
+</footer><!-- /.post-info -->
+
+        <h2>elastic与Hadoop的连接</h2>
+<p>几个月前,由于资源有限,而需求无限,不得已想到es与hadoop的连接,本来想的很好,尝试把HDFS作为es的存储后端,把index存入HDFS中,这样就能节省存储空间了.当然官网也有相关使用配置(这里就不介绍了),经过几天的奋斗还是没能实现当初的想法,也幸亏没实现,实现了性能也是一大坑(猜测性能非常差以至于官方的 <a href="https://github.com/elastic/elasticsearch-hdfs">elasticsearch-hdfs</a> 插件都几年没更新了!).</p>
+<p>不过倒是尝试了把HDFS作为后端存储,可以实现备份elasticsearch数据快照到HDFS或者是从HDFS中恢复数据.选择插件 <a href="https://github.com/elastic/elasticsearch-hadoop/tree/master/repository-hdfs">repository-hdfs</a>,其实就是使用了ES的 <code>snapshot/restore</code> 功能.</p>
+<h2>安装插件</h2>
+<p>我的es版本为 <code>1.3.9-1</code>,注意: <code>1.3.0-1.3.7 and 1.4.0-1.4.2</code> 存在<a href="https://www.elastic.co/blog/elasticsearch-1-4-3-and-1-3-8-released/">Grooy漏洞</a>,所以选择版本的时候注意下,插件选择版本对应为2.0.2,后端Hadoop为2.5.0,安装方式如下: </p>
+<div class="highlight"><pre>./bin/plugin -i elasticsearch/elasticsearch-repository-hdfs/2.0.2
+</pre></div>
+
+
+<p>当然像我这样没外网的可以选择 <a href="https://oss.sonatype.org/content/repositories/snapshots/org/elasticsearch/elasticsearch-repository-hdfs/">插件下载</a>,选择对应的版本,解压拷贝到es的plugin目录.</p>
+<h2>配置使用</h2>
+<h4>直接用curl法:</h4>
+<div class="highlight"><pre>curl -XPUT &#39;http://localhost:9200/_snapshot/backup&#39; -d &#39;{
+  &quot;type&quot;: &quot;hdfs&quot;,
+    &quot;settings&quot;: {
+            &quot;uri&quot;: &quot;hdfs://hadoop:8020&quot;,
+            &quot;path&quot;: &quot;/test/es&quot;,
+            &quot;conf_location&quot;: &quot;hdfs-site.xml&quot;
+    }
+}&#39;
+</pre></div>
+
+
+<p>返回 <code>{"acknowledged":true}</code> 表示创建成功.</p>
+<h5>查看创建的配置:</h5>
+<div class="highlight"><pre>curl http://localhost:9200/_snapshot/_all
+</pre></div>
+
+
+<p>可以看到返回刚才配置信息.</p>
+<h5>测试备份数据</h5>
+<div class="highlight"><pre>curl -XPUT &quot;localhost:9200/_snapshot/backup/snapshot_1?wait_for_completion=true&quot;
+</pre></div>
+
+
+<p>尝试去看下HDFS上是否有刚才备份的文件,访问 <code>http://hadoop:50070/explorer.html#/test/es</code> 便可以看到相关的快照文件.</p>
+<h5>测试还原数据</h5>
+<p>通过快照还原数据,测试前可以把之前测试做过备份的索引进行删除,然后通过如下命令进行数据恢复:</p>
+<div class="highlight"><pre>curl -XPOST &quot;localhost:9200/_snapshot/backup/snapshot_1/_restore?wait_for_completion=true&quot;
+</pre></div>
+
+
+<h4>通过kopf插件进行设置</h4>
+<p><a href="https://github.com/lmenezes/elasticsearch-kopf">elasticsearch-kopf</a>,是一个对es集群管理综合插件,无需安装<a href="http://lmenezes.com/elasticsearch-kopf/?location=http://localhost:9200">体验地址</a>.</p>
+<p>备份恢复快照设置如图:</p>
+<p><img alt="rsyslog" src="/pictures/es_hdfs.png" title="u&quot;kopf设置&quot;" /></p>
+
+      </div><!-- /.entry-content -->
+
+        <div class="comments">
+                <h2>Comments !</h2>
+                    <!-- Duoshuo Comment BEGIN -->
+                        <div class="ds-thread"></div>
+                            <script type="text/javascript">
+        var duoshuoQuery = {short_name:"bigbo"};
+  (function() {
+      var ds = document.createElement('script');
+         ds.type = 'text/javascript';ds.async = true;
+            ds.src = 'http://static.duoshuo.com/embed.js';
+               ds.charset = 'UTF-8';
+                  (document.getElementsByTagName('head')[0]
+                       || document.getElementsByTagName('body')[0]).appendChild(ds);
+
+                     })();
+  </script>
+    <noscript>Please enable JavaScript to view the comments.</noscript>
+    <!-- Duoshuo Comment END -->
+
+
+    </article>
+  </section>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="site-footer">
+        <div class="row-fluid">
+            <div class="span10 offset1">
+                <address>
+                    <p>
+                    Copyright 2014-2015 by <a href="http://bigbo.github.io/">ljingb</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                    </p>
+                    <p>
+                    Powered by <a href="http://getpelican.com/">Pelican</a>,<a href="http://github.com/jsliang/pelican-fresh/">Fresh</a> is a responsive theme designed by <a href="http://jsliang.com/">jsliang</a> and <a href="https://github.com/jsliang/pelican-fresh/graphs/contributors">contributors</a>.
+                    </p>
+                </address>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-58118410-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+    <script src="//libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <script src="//libs.baidu.com/bootstrap/2.3.2/css/bootstrap.min.css"></script>
+</body>
+</html>
