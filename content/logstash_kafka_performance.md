@@ -334,3 +334,7 @@ logstash1.5fix性能:
 ```
 
 测试后感觉与想象中有些差距,对1.5正式版性能稳定性提升抱有希望.后续会跟进,做一些其他更多相关测试.
+
+* 更新:
+
+30.31日, `logstash1.5fix` 分支的修改已经并入到master分支了,详细见 [merge](https://github.com/elastic/logstash/commit/dbe4154aa689260e6233e3d8e3ad3b03bca4c274),相信性能会在1.5的正式版得到回归.
