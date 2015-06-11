@@ -10,7 +10,7 @@ Author: ljingb
 作为对日志转发工具,对系统环境有限制的情况下可以有两个选择:
 
  1. [awesant](https://github.com/bloonix/awesant) :基于perl写的轻量级logstash
- 2. [heka](https://github.com/mozilla-services/heka) :后面重点介绍
+ 2. [heka](https://github.com/mozilla-services/heka) :基于go语言开发,无系统依赖,高并发
 
 
 ----------
@@ -24,6 +24,9 @@ Heka 是 Mozilla 公司仿造 logstash 设计,用 Golang 重写的一个开源�
 
 ## 0x02 架构简述
 Heka 内部对数据的过滤;转发等,都是采用指针形式.有着高并发,速度快等特点(实际测试监听文件转发至 Kafka 速度是 logstash 的10倍左右) ,目前 heka 可以支持多种格式的消息.
+
+![heka](/pictures/heka-overview-diagram.png u"heka流程图")
+
 对日志处理流程如下:
 
 ` [input] -> [splitter] -> [decoder] -> [filter] -> [encoder] -> [output] `
@@ -47,6 +50,8 @@ Heka 内部对数据的过滤;转发等,都是采用指针形式.有着高并发
 
 ## 0x03 Heka 配置使用
 Heka的配置文件要设置好所需要的 Input/Decoder/Filter/Encoder/Output(不需要的可以不配置).
+配置文件对于新手来说,编写不是那么友好,而且使用起来有些死板,不过可以调用 `lua` 可以对日志进行灵活的定制转换.
+
 以对文件进行实时监听为例:
 
 ```
