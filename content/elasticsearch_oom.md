@@ -1,6 +1,6 @@
-Title: 引发Elasticsearch OOM之type 
+Title: 引发Elasticsearch OOM之type
 Date: 2015-07-20 13:40
-Modified: 2015-07-28 15:00
+Modified: 2015-07-28 16:30
 Category: Technology
 Tags: elasticsearch oom, elasticsearch 调优
 Slug: elasticsearch_oom
@@ -62,17 +62,13 @@ Type是相当于关系数据库中的"表".每种类型都有一列字段,用来
 
 elasticsearch 跟 MySQL 中定义数据格式的角色关系对照表如下:
 
-| MySQL    | elasticsearch |
-| -------- |:----:| 
-| database | index |
-| table    | type  |
-                       
-| table   |  schema mapping |
-| ------- | :-----: |
-|row   |  document  |
-|field |  field     |
+| MySQL    |  备注 | elasticsearch | 备注 |
+| -------- |:----:|:-------:|
+| database |many tables |index | many types|
+| table    |many rows;one schema |type | many documents;one mapping|
+| row      | many columns |document | many fields|
 
-以上都是一些基本概念的解释,参照对比MySQL,可以得出mapping中各个字段在ES存储数据中的作用.重点是要了解mapping!
+以上都是一些基本概念的解释,参照对比MySQL,可以大致了了解ES存储结构关系.
 
 ## 0x02 故障回顾
 
