@@ -1,6 +1,6 @@
 Title: 引发Elasticsearch OOM之type
 Date: 2015-07-20 13:40
-Modified: 2015-07-28 16:30
+Modified: 2015-07-28 15:00
 Category: Technology
 Tags: elasticsearch oom, elasticsearch 调优
 Slug: elasticsearch_oom
@@ -70,6 +70,8 @@ elasticsearch 跟 MySQL 中定义数据格式的角色关系对照表如下:
 
 以上都是一些基本概念的解释,参照对比MySQL,可以大致了了解ES存储结构关系.
 
+***
+
 ## 0x02 故障回顾
 
 ### 问题发生现象
@@ -104,9 +106,21 @@ curl -XGET 'http://localhost:9200/_cat/health'
 在开启双写模式下,经过不到1个小时的时间,小集群内存就OOM了,集群瘫痪无相应了.此时开始注意到上面说的WARN,并根据实际数据写入量做分析,发现实际写入数据size也就不到2g左右,集群内存就被撑爆,而我的硬盘空间远远大于2g存储空间,感觉所有数据都被存到内存当中了,而不是存到硬盘当中了.于是打开监控查看之前OOM的整个历史记录.
 ![elasticsearch_oom1](/pictures/es_oom1.png u"es_oom")
 
+***
+
 ## 0x03 故障分析总结
 通过上面监控发现,随着我的数据写入量的增大,jvm每次完整一次gc后可用内存越来越少,存在内存泄露.而日志中继续不断报WARN.此时查看对应索引的mapping,发现长时间无法返回结果,查看数据写入逻辑得知,写入数据index中的type被当成一个变量,也就是每一个关键词都会在mapping中生成一个"[关键词]"的type,于是这会导致ES得到一条日志就会 `update_mapping` ,更新 `cluster.metadata`, `type` 是 `mapping` 中的一部分, `mapping` 也用于配置元数据和type之间的关系;以上的使用可以理解为每有一个关键字,就会新建一张表,而 `mapping` 是元数据,需要加载到内存,来管理各个索引每个对应字段的,最终会得到一个非常庞大的 `mapping` ,从而内存不足,造成集群响应不了从而假死宕机.
 
 以上都是理论,实践出真知,在服务没有宕机之前赶紧把有问题索引干掉,于是美好的事情发生了,内存回收正常,通过上图可以看到18:30分以后的监控数据是删掉有问题索引以后的jvm gc过程,一切恢复正常.
 
 es索引的结构 `index -> shard -> segment` ,是这样一个逻辑,如果用户搜 `/index/type/_search` , 就需要有个办法快速过滤出满足需要的数据集,type是被索引起来的.有两种使用方式注意: **不同type下不同field的类型如果不一样** 以及 **不同_type下相同field** 都会在mapping新生成一个type,还是会浪费mapping空间,所以使用上需要注意.
+
+***
+
+关于ES相关文档：
+Elasticsearch权威指南1 [^ES_BOOK1]
+ElasticSearch 权威指南2 [^ES_BOOK2]
+
+[^ES_BOOK1]: https://www.gitbook.com/book/looly/elasticsearch-the-definitive-guide-cn/details
+
+[^ES_BOOK2]: https://www.gitbook.com/book/fuxiaopang/learnelasticsearch/details
