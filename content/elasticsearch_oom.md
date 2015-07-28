@@ -1,6 +1,6 @@
 Title: 引发Elasticsearch OOM之type
 Date: 2015-07-20 13:40
-Modified: 2015-07-28 15:00
+Modified: 2015-07-28 21:00
 Category: Technology
 Tags: elasticsearch oom, elasticsearch 调优
 Slug: elasticsearch_oom
@@ -114,6 +114,8 @@ curl -XGET 'http://localhost:9200/_cat/health'
 以上都是理论,实践出真知,在服务没有宕机之前赶紧把有问题索引干掉,于是美好的事情发生了,内存回收正常,通过上图可以看到18:30分以后的监控数据是删掉有问题索引以后的jvm gc过程,一切恢复正常.
 
 es索引的结构 `index -> shard -> segment` ,是这样一个逻辑,如果用户搜 `/index/type/_search` , 就需要有个办法快速过滤出满足需要的数据集,type是被索引起来的.有两种使用方式注意: **不同type下不同field的类型如果不一样** 以及 **不同_type下相同field** 都会在mapping新生成一个type,还是会浪费mapping空间,所以使用上需要注意.
+
+但凡集群不稳定经常OOM的话就需要追查原因了,首先要做到有据可查,也就是要把能加监控的加监控,观察宕机情况,然后查看log,log的记录还是很详细的,跟着log來查相应原因,一般都好解决.
 
 ***
 
