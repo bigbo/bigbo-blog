@@ -63,10 +63,11 @@ Type是相当于关系数据库中的"表".每种类型都有一列字段,用来
 elasticsearch 跟 MySQL 中定义数据格式的角色关系对照表如下:
 
 | MySQL    |  备注 | elasticsearch | 备注 |
-| -------- |:----:|:-------:|
+| -------- | ------ | ------- | -------- |
 | database |many tables |index | many types|
 | table    |many rows;one schema |type | many documents;one mapping|
 | row      | many columns |document | many fields|
+
 
 以上都是一些基本概念的解释,参照对比MySQL,可以大致了了解ES存储结构关系.
 
@@ -80,11 +81,12 @@ elasticsearch 跟 MySQL 中定义数据格式的角色关系对照表如下:
 ```
 curl -XGET 'http://localhost:9200/_cat/health'
 ```
-日志内存不足warn:
 
+日志内存不足warn:
 ```
 [2015-07-21 11:39:01,458][WARN ][monitor.jvm              ] [Fagin] [gc][old][83840][226] duration [15.1s], collections [1]/[16.2s], total [15.1s]/[6.3m], memory [3.4gb]->[2.7gb]/[3.8gb], all_pools {[young] [731.6mb]->[115.9mb]/[1gb]}{[survivor] [136.5mb]->[0b]/[136.5mb]}{[old] [2.5gb]->[2.6gb]/[2.6gb]}
 ```
+
 然后逐渐有的节点不接受请求和响应,逐渐的脱离集群.
 
 ```
@@ -116,6 +118,11 @@ curl -XGET 'http://localhost:9200/_cat/health'
 es索引的结构 `index -> shard -> segment` ,是这样一个逻辑,如果用户搜 `/index/type/_search` , 就需要有个办法快速过滤出满足需要的数据集,type是被索引起来的.有两种使用方式注意: **不同type下不同field的类型如果不一样** 以及 **不同_type下相同field** 都会在mapping新生成一个type,还是会浪费mapping空间,所以使用上需要注意.
 
 但凡集群不稳定经常OOM的话就需要追查原因了,首先要做到有据可查,也就是要把能加监控的加监控,观察宕机情况,然后查看log,log的记录还是很详细的,跟着log來查相应原因,一般都好解决.
+
+***
+
+## 0x04 其他OOM的原因及注意
+默认情况ES对字段数据缓存(Field Data Cache)大小是无限制的,查询时候会把字段放到内存做缓存,特别是facet查询(kibana3),对内存要求非常高,它会把结果放到内存,然后进行排序等操作,一直使用内存,直到内存用完,当内存不够用时就有可能出现out of memory 问题.在配置的时候需要注意cache.field相关设置.
 
 ***
 
