@@ -37,7 +37,7 @@ SOCIAL = (('atom', FEED_ALL_ATOM),
 GITHUB_URL = 'https://github.com/bigbo'
 
 ## 分页
-DEFAULT_PAGINATION = 3
+DEFAULT_PAGINATION = 6
 
 ## 静态目录设置
 STATIC_PATHS = ["pictures", ]
