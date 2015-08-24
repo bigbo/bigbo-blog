@@ -6,6 +6,10 @@ Tags: kafka,消息队列,logstash,日志处理
 Slug: logstash_kafka
 Author: ljingb
 
+** 本篇为旧版,更新版本详见: **
+
+<http://bigbo.github.io/pages/2015/08/07/logstash_kafka_new/>
+
 ## 前言
 关于logstash可以产看其 [官网](http://logstash.net/) ,对于英文有障碍的人士,或是想知道更多插件使用技巧的用户请移步 [@三斗室](http://chenlinux.com/) 所著作 [logstash最佳实战](https://github.com/bigbo/logstash-best-practice-cn) ,本片内容已经并入其中相关章节.
 
