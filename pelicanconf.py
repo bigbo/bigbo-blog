@@ -25,7 +25,8 @@ FEED_ATOM = ''
 LINKS = (('Pelican Doc', 'http://pelican-docs-zh-cn.readthedocs.org/en/latest/'),
          (u'三斗室', 'http://chenlinux.com/'),
          ('argcv', 'http://argcv.com/'),
-         ('Hailin Zeng', 'http://hailinzeng.github.io/'),)
+         ('Hailin Zeng', 'http://hailinzeng.github.io/'),
+         (u'峰云就她', 'http://xiaorui.cc/'),)
          #('You can modify those links in your config file', '#'),)
 
 ## 社交连接
