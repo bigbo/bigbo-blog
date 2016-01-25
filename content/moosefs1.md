@@ -41,6 +41,49 @@ Author: ljingb
 
 ![MFS架构图](/pictures/mfs_pic3.png)
 
+
+MFS的读数据过程
+
+* 1.client当需要一个数据时,首先向master server发起查询请求
+* 2.master server检索自己的数据,获取到数据所在的可用数据服务器位置ip/port/chunk_id
+* 3.master server将数据服务器(chunk server)的地址发送给客户端
+* 4.chunk server将数据发送给客户端
+
+MFS的写数据过程
+
+* 1.当客户端有数据写需求时,首先向master server提供元文件元数据信息请求存储地址(元数据信息如下:文件名/大小/分数等)
+* 2.master server根据写文件的元数据信息,到chunk server创建新的数据块
+* 3.chunk server返回创建成功的消息
+* 4.master server将chunk server的地址(chunk_ip/port/chunk_id)返回给客户端
+* 5.客户端向chunk server写数据
+* 6.chunk server返回给客户端写成功的消息
+* 7.客户端将此次写完成结束信号和一些信息发送到master server来更新文件的长度和最后修改时间
+
+MFS的删除文件过程
+
+* 1.客户端有删除操作时,首先向master server发送删除信息
+* 2.master server定位到相应元数据信息进行删除,并将chunk server上块的删除操作加入队列异步清理
+* 3.响应客户端删除成功的信号
+
+MFS修改文件内容过程
+
+* 1.客户端有修改文件内容时,先向master server 发送操作信息
+* 2.master server申请新的块给.swp文件
+* 3.客户端关闭文件后,会向master server发送关闭信息
+* 4.master server 会检测内容是否有更新,若有,则申请新的块存放更改后的文件,删除原有块和.swp文件块
+* 5.若无,则直接删除.swp文件块
+
+MFS重命名文件过程
+
+* 1.客户端重命名文件时,向master server 发送操作信息
+* 2.master server直接修改元数据信息中的文件名,返回重命名完成信息
+
+MFS遍历文件的过程
+
+* 1.遍历文件不需要访问chunk server,当有客户端遍历请求时,向master server发送操作信息
+* 2.master server返回相应元数据信息
+* 3.客户端接收到信息后显示
+
 * * *
 
 ## 配置文件详解
