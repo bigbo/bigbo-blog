@@ -12,29 +12,13 @@ Author: ljingb
 
 只谈监控不谈架构那如同耍流氓,监控可以追溯历史,查故障原因,分析瓶颈点,作为服务来说需要全面监控.
 
-```flow
-st1=>start: Logs(Nginx等)
-e=>end: Client(Kibana/script等)
-
-op1=>operation: 基础监控(报警)
-op2=>operation: Elasticsearch 集群
-
-cond1=>condition: 独立缓冲区(kafka)
-cond2=>condition: Nginx
-cond3=>condition: 数据消费端(logstash/hangout等)
-
-st1->cond1
-cond1(yes)->cond3
-cond1(no)->op1
-cond3(yes)->cond2
-cond3(no)->op1
-cond2(yes)->op2
-cond2(no)->e
-```
+![es_monitor](/pictures/es_monitor.png u"es监控")
 
 **注:** 
 1.elasticsearch 我们是按角色部署,前面顶了个nginx,可以控制相关访问以及负载.
+
 2.整个服务监控指的是系统的各个组件,图中有直接关联基础监控部分,也有没有关联的基础监控
+
 ***
 
 ## 0x02 可监控项
@@ -47,6 +31,7 @@ cond2(no)->e
 
 ### 0x02.3 Elasticsearch 日志监控
 1.Elasticsearch 慢查询日志监控(需要开启慢查询日志记录)
+
 2.服务本身日志监控,产生ERROR等异常时监控
 
 ### 0x02.4 Elasticsearch 服务指标监控
@@ -57,6 +42,7 @@ Elasticsearch 本身提供了非常完善的,由浅及深的各种性能数据�
 Elasticsearch 细分为集群/节点/index级别的三个层次监控.
 
 1.集群级别的监控
+
 命令示例:
 ```
 # curl -XGET 127.0.0.1:9200/_cluster/health?pretty
@@ -87,6 +73,7 @@ Elasticsearch 细分为集群/节点/index级别的三个层次监控.
 所以报警规则应该设置为非绿则报警.
 
 2.Node 级别监控
+
 通过如下命令获取节点状态:
 ```
 # curl -XGET 127.0.0.1:9200/_nodes/stats
@@ -112,6 +99,7 @@ Elasticsearch 细分为集群/节点/index级别的三个层次监控.
 > `fielddata`: 如果fielddata的大小比分配内存还大,那就会导致OOM, Elasticsearch 引入了断路器,用于预先估算内存够不够,如果不够,断路器就会被触发(tripped)并返回异常,而不至于导致OOM.所以需要监控 tripped,如果这个值很大或者说一直在增长,那么就说明查询需要优化或者说需要更多内存
 
 3.Index 级别监控
+
 索引状态监控接口的输出信息和节点状态监控接口非常类似,一般情况下,这个接口单独监控起来的意义并不大.
 通过如下命令获取节点状态:
 ```
@@ -119,6 +107,7 @@ Elasticsearch 细分为集群/节点/index级别的三个层次监控.
 ```
 
 4.ES集群 服务级别监控
+
 对于集群来说我们的关注指标往往是集群整体的性能,例如集群的整体写入性能,查询效率,并发能力等,这些指标可以直接通过每台Node节点指标叠加获取到.
 
 ***
@@ -126,7 +115,7 @@ Elasticsearch 细分为集群/节点/index级别的三个层次监控.
 ## 0x03 总结
 对于Elasticsearch来说,搭建起来用很容易,但是想用好,并调整到最优状态并不是一时可以搞定的,所以需要监控各项指标,从各个点综合考虑调优.
 
-结合以上的分析,编写出基于Open-Falcon监控下的ES服务监控:https://github.com/bigbo/Elasticsearch-Falcon ,目前只是完成基础监控,还有待完善其他监控指标.使用有问题希望给我发issues.
+结合以上的分析,编写出基于Open-Falcon监控下的ES服务监控: https://github.com/bigbo/Elasticsearch-Falcon ,目前只是完成基础监控,还有待完善其他监控指标.使用有问题希望给我发issues.
 
 相关参考连接:
 * http://kibana.logstash.es/
